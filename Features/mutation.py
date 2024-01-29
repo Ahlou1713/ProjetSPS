@@ -4,7 +4,7 @@ import random
 
 def dna_mutation(dna, num):
     mut_dna = dna
-    mut_index = random.sample(range(0, len(dna)), num)
+    mut_index = random.sample(range(0, len(mut_dna)), num)
 
     print(f"Mutation indexes : {mut_index}")
     for m in mut_index:
