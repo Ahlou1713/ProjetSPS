@@ -9,9 +9,8 @@ def freq_codon(dna):
     for i in range(0, len(rna), 3):
         codon = rna[i : i + 3]
         if codon in d:
-            d[codon][0] += 1
+            d[codon] += 1
         else:
-            d[codon][0] = 1
-            d[codon][1] = codon_tab[codon]
+            d[codon] = 1
 
     return d
