@@ -25,6 +25,7 @@ def menu(dna_list):
             + "8- Réaliser des mutations aléatoires sur la chaîne ADN\n"
             + "9- Chercher un motif dans la chaîne ADN\n"
             + "10- Générer la chaîne ADN consensus et la matrice profil\n"
+            + "11- Sauvegarder les résultats"
             + "\n0- Exit\n"
         )
 
@@ -220,7 +221,9 @@ def menu(dna_list):
                 print("File created successfully")
 
                 input("\nClick on Enter to continue")
-
+            case _:
+                print('Please enter a valid value!')
+                input("\nClick on Enter to continue")
 
 print("Welcome onboard!")
 print(
@@ -228,23 +231,27 @@ print(
     + "the menu will appear after you select one of the two options below: (to choose type 1 or 2)\n"
 )
 
-print("1- Choose a file from pc for the DNA sequences to analyse")
-print("2- Generate random DNA sequences to analyse")
+while(True):
+    print("1- Choose a file from pc for the DNA sequences to analyse")
+    print("2- Generate random DNA sequences to analyse")
 
-sequence = int(input())
+    sequence = int(input())
 
-match sequence:
-    case 1:
-        path = input("Enter the path to your file: ")
-        dna_list = read_file_slice_it(path)
+    match sequence:
+        case 1:
+            path = input("Enter the path to your file: ")
+            dna_list = read_file_slice_it(path)
 
-        menu(dna_list)
-    case 2:
-        sequence_number = int(input("The number of sequences you want: "))
-        sequence_length = int(input("With what length: "))
+            menu(dna_list)
+        case 2:
+            sequence_number = int(input("The number of sequences you want: "))
+            sequence_length = int(input("With what length: "))
 
-        dna_list = []
-        for i in range(sequence_number):
-            dna_list.append(generate_random_dna(sequence_length))
+            dna_list = []
+            for i in range(sequence_number):
+                dna_list.append(generate_random_dna(sequence_length))
 
-        menu(dna_list)
+            menu(dna_list)
+        case _:
+            print('Please enter a valid value!')
+            input("\nClick on Enter to continue")
