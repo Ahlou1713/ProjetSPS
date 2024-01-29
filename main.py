@@ -1,105 +1,233 @@
-from Features.DNAComplement import complement_dna
-from Features.DNATranscript import dna_to_rna
-from Features.DNATranslation import rna_to_prot
-from Features.GCQuantity import gc_in_dna
-from Features.baseFreq import base_frequency
-from Features.codonFreq import freq_codon
-from Features.consensus_profileMatrix import consensus_profile_matrix
-from Features.isDNAValid import is_dna_valid
-from Features.mutation import dna_mutation
-from Features.randomDNASeq import generate_random_dna
-from Features.readFile_slice_it import read_file_slice_it
-from Features.searchMotif import search_motif
+import random
 
-def menu(dna_list):
-    print('The menu:')
-    print('1- Vérifier la validité de la chaîne ADN si cette dernière est lue à partir d\'un fichier' +
-              '2- Calculer les fréquences des bases nucléiques dans la chaîne ADN' +
-              '3- Transcrire la chaîne ADN en une chaîne ARN.' +
-              '4- Traduire la chaîne ARN résultante en protéines (i.e., acides aminés)' +
-              '5- Calculer le complément inverse de la chaîne ADN' +
-              '6- Calculer le taux de GC de la séquence ADN' +
-              '7- Calculer les fréquences de codons dans la chaîne ADN' +
-              '8- Réaliser des mutations aléatoires sur la chaîne ADN. Une mutation est une modification rare,' +
-              'accidentelle ou provoquée, de la séquence nucléotidique de l\'ADN. Il existe plusieurs types' +
-              'de mutations ; il vous est demandé d\'implémenter la mutation ponctuelle par substitution.' +
-              'Ce type de mutation consiste à remplacer un nucléotide par un autre. Le nombre de' +
-              'mutations à réaliser est spécifié par l\'utilisateur' +
-              '9- Chercher un motif dans la chaîne ADN' +
-              '10- Générer la chaîne ADN consensus et la matrice profil')
-    
-    menu = input('What do you want to do? (choose from the numbers 1-10): ')
-    match menu:
-        case 1:
-            for i in dna_list:
-                if(is_dna_valid(i)):
-                    print("DNA sequence valid!")
-                else:
-                    print("DNA sequence invalid!")
-        case 2:
-            for i in dna_list:
-                if(is_dna_valid(i)):
-                    print("For the sequence" + i,base_frequency(i))
-                else:
-                    print("DNA sequence invalid!")
-        case 3:
-            rna_list = []
-            for i in dna_list:
-                if(is_dna_valid(i)):
-                    rna = dna_to_rna(i)
-                    print("For the sequence" + i,rna)
-                    rna_list.append(rna)
-                else:
-                    print("DNA sequence invalid!")
-        case 4:
-            if(rna_list):
-                for i in rna_list:
-                    print("For " + i,rna_to_prot(i))
-        case 5:
-            for i in dna_list:
-                if(is_dna_valid(i)):
-                    print("For " + i,complement_dna(i))
-        case 6:
-            for i in dna_list:
-                if(is_dna_valid(i)):
-                    print("For " + i,gc_in_dna(i))
-        case 7:
-            for i in dna_list:
-                if(is_dna_valid(i)):
-                    print("For " + i,freq_codon(i))
-        case 8:
-            for i in dna_list:
-                if(is_dna_valid(i)):
-                    print("For " + i,dna_mutation(i))
-        case 9:
-            for i in dna_list:
-                if(is_dna_valid(i)):
-                    print("For " + i,search_motif(i))
-        case 10:
-            d = consensus_profile_matrix(dna_list)
-            print(d)
-        
 
-print('Welcome onboard!')
-print('This application\'s aim is to give you the possibility to make some changes upon chosen DNA sequences,' 
-+ 'the menu will appear after you select one of the two options below: (to choose type 1 or 2)')
-print('1- Choose a file from pc for the DNA sequences to analyse')
-print('2- Generate random DNA sequences to analyse')
+# Générer une chaîne ADN aléatoire
+def creat_random_dna(n):
+    dna = ""
+    for i in range(n):
+        dna += random.choice(["A", "T", "C", "G"])
+    return dna
 
-sequence = int(input())
 
-match sequence:
-    case 1:
-        path = input('The path to your file: ')
-        dna_list = read_file_slice_it(path)
+# Vérifier la validité de la chaîne ADN
+def is_dna_valid(dna):
+    return set(dna) <= set("ATCG")
 
-        menu(dna_list)
-    case 2:
-        sequence_number = input('The number of sequences you want: ')
-        sequence_length = input('With what length: ')
-        i = 0
-        dna_list = []
-        while(i<sequence_number):
-            dna_list.append(generate_random_dna(sequence_length))
-        menu(dna_list)
 
+# Calculer les fréquences des bases nucléiques dans la chaîne ADN
+def base_freq(dna):
+    d = {}
+    for b in dna:
+        if b in d:
+            d[b] += 1
+        else:
+            d[b] = 1
+
+    return d
+
+
+# Transcrire la chaîne ADN en une chaîne ARN
+def dna_to_rna(dna):
+    return dna.replace("T", "U")
+
+
+# Transcrire la chaîne ARN résultante en protéines (i.e., acides aminés)
+def rna_to_prot(rna):
+    # Dictionnaire de correspondance des codons ARN aux acides aminés
+    codon_tab = {
+        "UUU": "Phe",
+        "UUC": "Phe",
+        "UUA": "Leu",
+        "UUG": "Leu",
+        "CUU": "Leu",
+        "CUC": "Leu",
+        "CUA": "Leu",
+        "CUG": "Leu",
+        "AUU": "Ile",
+        "AUC": "Ile",
+        "AUA": "Ile",
+        "AUG": "Met",
+        "GUU": "Val",
+        "GUC": "Val",
+        "GUA": "Val",
+        "GUG": "Val",
+        "UCU": "Ser",
+        "UCC": "Ser",
+        "UCA": "Ser",
+        "UCG": "Ser",
+        "CCU": "Pro",
+        "CCC": "Pro",
+        "CCA": "Pro",
+        "CCG": "Pro",
+        "ACU": "Thr",
+        "ACC": "Thr",
+        "ACA": "Thr",
+        "ACG": "Thr",
+        "GCU": "Ala",
+        "GCC": "Ala",
+        "GCA": "Ala",
+        "GCG": "Ala",
+        "UAC": "Tyr",
+        "UAU": "Tyr",
+        "UAA": "*",
+        "UAG": "*",
+        "CAU": "His",
+        "CAC": "His",
+        "CAA": "Gln",
+        "CAG": "Gln",
+        "AAU": "Asn",
+        "AAC": "Asn",
+        "AAA": "Lys",
+        "AAG": "Lys",
+        "GAU": "Asp",
+        "GAC": "Asp",
+        "GAA": "Glu",
+        "GAG": "Glu",
+        "UGU": "Cys",
+        "UGC": "Cys",
+        "UGA": "*",
+        "UGG": "Trp",
+        "CGU": "Arg",
+        "CGC": "Arg",
+        "CGA": "Arg",
+        "CGG": "Arg",
+        "AGU": "Ser",
+        "AGC": "Ser",
+        "AGA": "Arg",
+        "AGG": "Arg",
+        "GGU": "Gly",
+        "GGC": "Gly",
+        "GGA": "Gly",
+        "GGG": "Gly",
+    }
+
+    proteins = []
+    for i in range(0, len(rna), 3):
+        codon = rna[i : i + 3]
+        if len(codon) != 3:
+            break  # stop the transcription at the end
+
+        amino_acid = codon_tab[codon]
+        if amino_acid == "*":
+            break  # stop the transcription on a stop codon
+
+        proteins.append(amino_acid)
+
+    return proteins
+
+
+# Calculer le complément inverse de la chaîne ADN
+def invert_dna(dna):
+    dna_inv = ""
+    for b in dna:
+        if b == "A":
+            dna_inv += "T"
+        elif b == "T":
+            dna_inv += "A"
+        elif b == "C":
+            dna_inv += "G"
+        elif b == "G":
+            dna_inv += "C"
+
+    return dna_inv
+
+
+# Calculer le taux de GC de la séquence ADN
+def gc_in_dna(dna):
+    num_gc = 0
+    for b in dna:
+        if b in ["C", "G"]:
+            num_gc += 1
+
+    return (num_gc / len(dna)) * 100
+
+
+# Calculer les fréquences de codons dans la chaîne ADN
+def freq_codon(dna):
+    prot = rna_to_prot(dna_to_rna(dna))
+    d = {}
+    for b in prot:
+        if b in d:
+            d[b] += 1
+        else:
+            d[b] = 1
+
+    return d
+
+
+# Réaliser des mutations aléatoires sur la chaîne ADN
+def dna_mutation(dna, num):
+    mut_dna = dna
+    mut_index = random.sample(range(0, len(dna)), num)
+
+    print(f"Mutation indexes : {mut_index}")
+    for m in mut_index:
+        mut_dna = mut_dna[:m] + random.choice(["A", "T", "C", "G"]) + mut_dna[m + 1 :]
+
+    return mut_dna
+
+
+# Chercher un motif dans la chaîne ADN
+def search_motif(dna, motif):
+    positions = []
+
+    for i in range(len(dna) - len(motif) + 1):
+        if dna[i : i + len(motif)] == motif:
+            positions.append(i + 1)
+
+    return positions
+
+
+# Générer la chaîne ADN consensus et la matrice profil
+""" --- function here --- """
+
+# ------------------------------------------------------------------------------------------------#
+# Main
+# ------------------------------------------------------------------------------------------------#
+# DNA = "SATCGGCTAGATCGATCGTCGCTA"
+
+print("enter number : ", end="")
+n = input()
+
+dna = creat_random_dna(int(n))
+print(f"DNA : {dna}")
+print()
+
+
+if is_dna_valid(dna):
+    print("The DNA is valid\n")
+else:
+    quit("Invalid DNA")
+
+
+print(f"Nucleic bases frequences : {base_freq(dna)}\n")
+
+
+rna = dna_to_rna(dna)
+print(f"RNA : {rna}\n")
+
+
+print(f"proteins sequence : {rna_to_prot(rna)}\n")
+
+
+print(f"Inverted DNA : {invert_dna(dna)}\n")
+
+
+print(f"frequency of GC in DNA : {gc_in_dna(dna)}\n")
+
+
+print(f"Codon frequences : {freq_codon(dna)}\n")
+
+
+print("enter number of mutations : ", end="")
+m = input()
+print(f"DNA after mutations : {dna_mutation(dna, int(m))}\n")
+
+
+print("enter motif : ", end="")
+motif = input()
+pos = search_motif(dna, motif)
+if len(pos) == 0:
+    print(f"Motif '{motif}' was not found in DNA\n")
+else:
+    print(f"Motif positions : {pos}\n")
